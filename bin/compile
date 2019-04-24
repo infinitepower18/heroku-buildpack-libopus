@@ -14,7 +14,7 @@ VENDOR_DIR="$BUILD_DIR/.heroku/vendor"
 
 SOURCE_TARBALL='https://github.com/codeinteger6/files/raw/master/libopus/opus-1.3.1.tar.gz'
 echo "--------------------------------"
-echo "Libopus 1.3.1 buildpack for Heroku"
+echo "libopus 1.3.1 buildpack for Heroku"
 echo "Created by codeinteger6 (https://github.com/codeinteger6)"
 echo "--------------------------------"
 echo "Building $BP_NAME..."
