@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# bin/compile BUILD_DIR CACHE_DIR ENV_DIR
+
+set -eo pipefail
+[ "$BUILDPACK_XTRACE" ] && set -o xtrace
+
+# Variables
+BP_NAME="libopus"
+
+BIN_DIR=$(cd $(dirname $0); pwd)
+BUILD_DIR=$1
+TMP_DIR="/tmp/$BP_NAME"
+VENDOR_DIR="$BUILD_DIR/.heroku/vendor"
+
+SOURCE_TARBALL='https://github.com/codeinteger6/files/raw/master/libopus/opus-1.3.1.tar.gz'
+echo "--------------------------------"
+echo "Libopus 1.3.1 buildpack for Heroku"
+echo "Created by codeinteger6 (https://github.com/codeinteger6)"
+echo "--------------------------------"
+echo "Building $BP_NAME..."
+
+# Get source
+mkdir -p "$TMP_DIR"
+curl -L "$SOURCE_TARBALL" | tar -zxv --strip=1 -C "$TMP_DIR"
+cd "$TMP_DIR"
+
+# Build
+./configure --prefix="$VENDOR_DIR" --disable-static
+make
+make install
+
+# Create .profile script
+PROFILE_PATH="$BUILD_DIR/.profile.d/$BP_NAME.sh"
+append-env() { echo "[[ \":\$$1:\" != *\":$2:\"* ]] && export $1=\"\$$1:$2\"" >> $PROFILE_PATH; }
+
+append-env PATH '/app/.heroku/vendor/bin'
+append-env LIBRARY_PATH '/app/.heroku/vendor/lib'
+append-env LD_LIBRARY_PATH '/app/.heroku/vendor/lib'
